@@ -1,0 +1,24 @@
+{
+  "name": "productivity",
+  "version": "1.0.0",
+  "description": "A productivity app to track what needs to be done and what has been done",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node backend/server",
+    "server": "nodemon backend/server",
+    "client": "npm start --prefix frontend",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Monica Saturno Busatta",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "express-async-handler": "^1.1.4",
+    "mongoose": "^6.0.2",
+    "morgan": "^1.10.0"
+  }
+}
