@@ -1,8 +1,16 @@
 import mongoose from 'mongoose';
-import Task from '../models/taskModel.js';
+import Task from './taskModel.js';
 
 const categorySchema = mongoose.Schema({
-   name: {type: String, required: true},
+   user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true
+   },
+   name: {
+      type: String, 
+      required: true
+   },
 }, {
    timestamps: true
 });

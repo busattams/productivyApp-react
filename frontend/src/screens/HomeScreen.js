@@ -1,63 +1,51 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { LinkContainer } from 'react-router-bootstrap';
-import {Row, Col, Card, ListGroup } from 'react-bootstrap';
-import Loader from '../components/Loader';
-import Message from '../components/Message';
-import NewCategory from '../components/NewCategory';
-import Tasks from '../components/Tasks';
-import { listCategory } from '../actions/categoryAction';
+import {Row, Col } from 'react-bootstrap';
 import TodayTasks from '../components/TodayTasks';
+import NextTasks from '../components/NextTasks';
+import Categories from '../components/Categories';
+import NewCategory from '../components/NewCategory';
+import { listCategory } from '../actions/categoryAction';
+import { listTasks } from '../actions/tasksActions';
 
-const HomeScreen = () => {
+const HomeScreen = ({ history }) => {
 
    const dispatch = useDispatch();
+   
+   const userLogin = useSelector(state => state.userLogin);
+   const { userInfo } = userLogin;
 
    const categoryList = useSelector(state => state.categoryList);
-   const { loading, error, category } = categoryList;
+   const { loading:loadingCategory, error:errorCategory, category } = categoryList;
 
-   const categoryDelete = useSelector(state => state.deleteCategory);
-   const { success:successDelete } = categoryDelete;
+   const tasksList = useSelector(state => state.tasksList);
+   const { loading:loadingTasks, error:errorTasks, tasks } = tasksList;
+
+   const deletedCategory = useSelector(state => state.deleteCategory);
+   const { success:successDeleteCategory } = deletedCategory;
 
    useEffect(() => {
-      dispatch(listCategory());
-   }, [dispatch, successDelete]);
+      if(!userInfo) {
+         history.push('/login')
+      } else {
+         dispatch(listCategory());
+         dispatch(listTasks());
+      }
+   }, [dispatch, userInfo, successDeleteCategory, history]);
 
- 
+
+
 
    return (
-      <>
-         {loading ? (
-            <Loader />
-         ) : error ? (
-            <Message variant='danger' children={error} />
-         ) : (
-            <Row>
+      <Row>
+         <Col md={10} className='mx-auto pb-5'>
+            <TodayTasks tasks={tasks} error={errorTasks} loading={loadingTasks} />
+            <Categories category={category} error={errorCategory} loading={loadingCategory} />
+            <NewCategory />
+            <NextTasks tasks={tasks} error={errorTasks} loading={loadingTasks} />
 
-               <Col md={10} className='mx-auto'>
-               <TodayTasks />
-               <Card className='mt-5'>
-                  <Card.Header><h3>Projetos</h3></Card.Header>
-                  <ListGroup variant='flush'>
-                     {category.map(category => (
-                        <ListGroup.Item key={category._id} className='my-2'>
-                           <LinkContainer to={`/category/${category._id}`}>
-                              <a>{category.name}</a>
-                           </LinkContainer>
-                        </ListGroup.Item>
-                     ))}
-                  </ListGroup>
-               </Card>
-               <NewCategory />
-
-               </Col>
-
-
-            </Row>
-         )}
-
-        
-      </>
+         </Col>
+      </Row>
    );
 }
 

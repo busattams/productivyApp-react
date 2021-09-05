@@ -4,9 +4,9 @@ import cors from 'cors';
 import express from 'express';
 import connectDB from './config/database.js';
 import { notFound, errorHandler } from './middleware/errorMiddleware.js';
+import userRoutes from './routes/userRoutes.js';
 import categoryRoutes from './routes/categoryRoutes.js';
-import taskRoutes from './routes/taskRoutes.js'
-
+import taskRoutes from './routes/taskRoutes.js';
 
 dotenv.config()
 const app = express();
@@ -26,6 +26,7 @@ app.use(function(req, res, next) {
  });
 
 // ROUTES
+app.use('/api/user', userRoutes);
 app.use('/api/category', categoryRoutes)
 app.use('/api/tasks', taskRoutes)
 

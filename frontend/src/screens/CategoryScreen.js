@@ -1,18 +1,13 @@
-
-
 import React, { useState, useEffect } from 'react';
-
-import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 import {Row, Col, Card, Button, Form, ListGroup } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
-
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import pt from 'date-fns/locale/pt';
 import { format } from 'date-fns';
 import { registerLocale, setDefaultLocale } from  "react-datepicker";
-
 import Loader from '../components/Loader';
 import SmallLoader from '../components/SmallLoader';
 import Message from '../components/Message';
@@ -39,22 +34,24 @@ const CategoryScreen = ({ history, match }) => {
    const { success:successTask } = useSelector(state => state.newTask);
    const { success:successDeletedTask } = useSelector(state => state.deleteTask);
 
+   const categoryId = match.params.id;
+
    useEffect(() => {
-      dispatch(listCategoryTasks(match.params.id));
-      dispatch(getCategory(match.params.id));
-   }, [dispatch, successTask, successDeletedTask ]);
+      dispatch(listCategoryTasks(categoryId));
+      dispatch(getCategory(categoryId));
+   }, [dispatch, successTask, successDeletedTask, categoryId ]);
    
 
    const deleteHandler = (id) => {
       if(window.confirm('Tem certeza? Todas as tarefas desta categoria serão deletadas. Isso não pode ser desfeito.')) {
          dispatch(deleteCategory(id));
-         history.push(`/`);
+         history.push(`/home`);
       }
    }
 
    const submitHandler = (e) => {
       e.preventDefault();
-      dispatch(createTask(match.params.id, {
+      dispatch(createTask(categoryId, {
          name,
          priority,
          date
@@ -63,11 +60,12 @@ const CategoryScreen = ({ history, match }) => {
 
    return (
       <Row>
-         <Col md={9} className='mx-auto'>
+         <Col md={10} className='mx-auto'>
             { loadingCategory ? ( <SmallLoader /> ) : 
-              errorCategory ? (<Message variant='danger' children={error} />) : (
+              errorCategory ? (<Message variant='danger' children={errorCategory} />) : (
             <>
-               <Card bg='dark' className='px-5 py-4 mt-5'>
+            <Link className="btn btn-light my-1" to={`/home`}><i className="fas fa-chevron-left"></i> Voltar</Link>
+               <Card bg='dark' className='px-5 py-4'>
                   <div className='d-flex justify-content-between'>
                      <h1 className='text-white'>{category.name}</h1>
                      <div>
@@ -88,7 +86,7 @@ const CategoryScreen = ({ history, match }) => {
                               {task.date &&
                                  <p className='mb-0'>{format(new Date(task.date.toString()), "dd/MMM", { locale: pt })}</p>
                               }
-                           <LinkContainer to={`/task/${task._id}`}><a><h4>{task.name}</h4></a></LinkContainer>
+                           <LinkContainer to={`/task/${task._id}`}><h4>{task.name}</h4></LinkContainer>
                            </div>
                         </ListGroup.Item>
                      ))

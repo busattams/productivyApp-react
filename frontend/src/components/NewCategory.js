@@ -19,6 +19,7 @@ const NewCategory = () => {
       if(success) {
          dispatch({type: NEW_CATEGORY_RESET})
          dispatch(listCategory());
+         setCategory('');
       }
    }, [dispatch, createdCategory, success])
 
@@ -38,6 +39,7 @@ const NewCategory = () => {
                <Form onSubmit={submitHandler}  className='d-flex'>
                   <Form.Control type='text'
                      placeholder='Adicione um novo projeto'
+                     required
                      value={category}
                      onChange={(e) => setCategory(e.target.value)}
                      className="me-3"

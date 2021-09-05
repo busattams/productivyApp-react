@@ -23,10 +23,16 @@ import {
 } from "../constants/taskCostants";
 import axios from 'axios';
 
-export const listTasks = () => async (dispatch) => {
+export const listTasks = () => async (dispatch, getState) => {
    try {
       dispatch({type: TASK_LIST_REQUEST});
-      const { data } = await axios.get(`http://localhost:3001/api/tasks/`);
+      const { userLogin: { userInfo } } = getState()
+      const config = {
+         headers: {
+            Authorization: `Bearer ${userInfo.token}`
+         }
+      }
+      const { data } = await axios.get(`http://localhost:3001/api/tasks/`, config);
       dispatch({
          type: TASK_LIST_SUCCESS,
          payload: data
@@ -41,10 +47,16 @@ export const listTasks = () => async (dispatch) => {
    }
 }
 
-export const listCategoryTasks = (category) => async (dispatch) => {
+export const listCategoryTasks = (category) => async (dispatch, getState) => {
    try {
       dispatch({type: TASK_CATEGORY_REQUEST});
-      const { data } = await axios.get(`http://localhost:3001/api/tasks/category/${category}`);
+      const { userLogin: { userInfo } } = getState()
+      const config = {
+         headers: {
+            Authorization: `Bearer ${userInfo.token}`
+         }
+      }
+      const { data } = await axios.get(`http://localhost:3001/api/tasks/category/${category}`, config);
       dispatch({
          type: TASK_CATEGORY_SUCCESS,
          payload: data
@@ -60,21 +72,24 @@ export const listCategoryTasks = (category) => async (dispatch) => {
 }
 
 
-export const createTask = (category, task) => async (dispatch) => {
+export const createTask = (category, task) => async (dispatch, getState) => {
    try {
       dispatch({type: NEW_TASK_REQUEST});
+
+      const { userLogin: { userInfo } } = getState()
       
       const config = {
          headers: {
             "Content-Type": "application/json",
-            "Accept": "application/json"
+            "Accept": "application/json",
+            Authorization: `Bearer ${userInfo.token}`
          },
       }
-         const { data } = await axios.post(
-            `http://localhost:3001/api/tasks/${category}/task`,
-            task,
-            config
-            );
+      const { data } = await axios.post(
+         `http://localhost:3001/api/tasks/${category}/new`,
+         task,
+         config
+      );
 
       dispatch({
          type: NEW_TASK_SUCCESS,
@@ -90,10 +105,16 @@ export const createTask = (category, task) => async (dispatch) => {
    }
 }
 
-export const getTask = (id) => async (dispatch) => {
+export const getTask = (id) => async (dispatch, getState) => {
    try {
       dispatch({type: GET_TASK_REQUEST});
-      const { data } = await axios.get(`http://localhost:3001/api/tasks/${id}`);
+      const { userLogin: { userInfo } } = getState()
+      const config = {
+         headers: {
+            Authorization: `Bearer ${userInfo.token}`
+         }
+      }
+      const { data } = await axios.get(`http://localhost:3001/api/tasks/${id}`, config);
       dispatch({
          type: GET_TASK_SUCCESS,
          payload: data
@@ -108,11 +129,17 @@ export const getTask = (id) => async (dispatch) => {
    }
 }
 
-export const completeTask = (id) => async (dispatch) => {
+export const completeTask = (id) => async (dispatch, getState) => {
    try {
       dispatch({type: COMPLETE_TASK_REQUEST});
     
-      await axios.put(`http://localhost:3001/api/tasks/${id}/complete`);
+      const { userLogin: { userInfo } } = getState()
+      const config = {
+         headers: {
+            Authorization: `Bearer ${userInfo.token}`
+         }
+      }
+      await axios.patch(`http://localhost:3001/api/tasks/${id}/complete`, {}, config);
       
       dispatch({type: COMPLETE_TASK_SUCCESS});
 
@@ -127,11 +154,18 @@ export const completeTask = (id) => async (dispatch) => {
 }
 
 
-export const deleteTask = (id) => async (dispatch) => {
+export const deleteTask = (id) => async (dispatch, getState) => {
    try {
       dispatch({type: DELETE_TASK_REQUEST});
+      const { userLogin: { userInfo } } = getState()
+      const config = {
+         headers: {
+            Authorization: `Bearer ${userInfo.token}`
+         }
+      }
       await axios.delete(
          `http://localhost:3001/api/tasks/${id}`,
+         config
       );
 
       dispatch({type: DELETE_TASK_SUCCESS});
@@ -147,18 +181,20 @@ export const deleteTask = (id) => async (dispatch) => {
 }
 
 
-export const addCommentTask = (id, comment) => async (dispatch) => {
+export const addCommentTask = (id, comment) => async (dispatch, getState) => {
    try {
       dispatch({type: COMMENT_TASK_REQUEST});
 
+      const { userLogin: { userInfo } } = getState()
       const config = {
          headers: {
             "Content-Type": "application/json",
-            "Accept": "application/json"
+            "Accept": "application/json",
+            Authorization: `Bearer ${userInfo.token}`
          },
       }
     
-      await axios.put(`http://localhost:3001/api/tasks/${id}/comment`,
+      await axios.patch(`http://localhost:3001/api/tasks/${id}/comment`,
          comment,
          config
       );

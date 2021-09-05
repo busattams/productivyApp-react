@@ -6,21 +6,11 @@ import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import {Row, Col, Card, Button, Form, ListGroup } from 'react-bootstrap';
 import Badge from 'react-bootstrap/Badge';
-import { LinkContainer } from 'react-router-bootstrap';
-
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
 import pt from 'date-fns/locale/pt';
 import { format } from 'date-fns';
-import { registerLocale, setDefaultLocale } from  "react-datepicker";
-
 import Loader from '../components/Loader';
-import SmallLoader from '../components/SmallLoader';
 import Message from '../components/Message';
 import { addCommentTask, completeTask, deleteTask, getTask } from '../actions/tasksActions';
-
-setDefaultLocale('pt');
-registerLocale('pt', pt);
 
 const CategoryScreen = ({ history, match }) => {
 
@@ -34,9 +24,10 @@ const CategoryScreen = ({ history, match }) => {
    const { success: successComplete } = useSelector(state => state.completeTask);
    const { success: successComment } = useSelector(state => state.commentTask);
 
+   const taskId = match.params.id;
    useEffect(() => {
-      dispatch(getTask(match.params.id));
-   }, [dispatch, successComplete, successComment]);
+      dispatch(getTask(taskId));
+   }, [dispatch, successComplete, successComment, taskId]);
    
 
    const completeTaskHandler = () => {
@@ -61,26 +52,22 @@ const CategoryScreen = ({ history, match }) => {
       { loading ? <Loader /> : error ? <Message variant='danger' children={error} /> : (
          
          <Row>
-            <Col md={12}>
-            <Link className="btn btn-light my-1" to={`/category/${task.category._id}`}><i className="fas fa-chevron-left"></i> Voltar para Projeto</Link>
-            </Col>
-
             <Col md={10} className='mx-auto'>
-
+               <Link className="btn btn-light my-1" to={`/category/${task.category._id}`}><i className="fas fa-chevron-left"></i> Voltar para Projeto</Link>
                <Card bg='light'>
                   <Card.Body>
                      <Row>
-                        <Col md={8}>
-                           <h1 className='mb-0'>{task.name}</h1>
-                           <p className='fw-bold mb-0'>Para: {format(new Date(task.date.toString()), "dd 'de' MMMM 'de' yyyy", { locale: pt })}</p>
+                        <Col md={6}>
                            <Badge className={`bg-dark ${task.priority.toLowerCase()} me-2`}>{task.priority}</Badge>
-                           <Badge className={`bg-dark ${task.completed}`}>{task.completed ? 'FEITA' : 'NÃO FEITA'}</Badge>
+                           <Badge className={`${task.completed ? 'baixa' : 'urgente'}`}>{task.completed ? 'FEITA' : 'NÃO FEITA'}</Badge>
+                           <h1 className='mb-0'>{task.name}</h1>
+                           <p className='fw-bolder mb-0'>Para: {format(new Date(task.date.toString()), "dd 'de' MMMM 'de' yyyy", { locale: pt })}</p>
                         </Col>
-                        <Col md={4} className='text-center'>
-                        <Button variant='outline-success' className='btn-sm ms-auto' onClick={completeTaskHandler}>
+                        <Col md={6} className='text-md-center mt-md-0 mt-3'>
+                           <Button variant='outline-success' className=' ms-auto' onClick={completeTaskHandler}>
                               <i className='fas fa-check'></i> {task.completed ? 'Marcar como não feito' :  "Marcar como feito"}
                            </Button><br />
-                           <Button variant='outline-danger' className='btn-sm  mt-3 btn-delete' onClick={deleteTaskHandler}>
+                           <Button variant='outline-danger' className='mt-3 btn-delete ms-5 ms-md-0' onClick={deleteTaskHandler}>
                               <i className='fas fa-trash'></i> Excluir tarefa
                            </Button>
                         </Col>

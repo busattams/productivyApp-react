@@ -20,7 +20,10 @@ a {text-decoration: none;}
   text-transform: none;
   padding: 0
 }
-
+.btn-delete:hover {
+  background: transparent;
+  color: #d9534f;
+}
 .taskContainer {
   border-left: 5px solid #ccc;
   padding: 6px 0;
@@ -32,14 +35,26 @@ a {text-decoration: none;}
 .taskContainer.baixa {border-color: green}
 
 .badge.urgente {background: red !important}
+.badge.baixa {background: green !important}
+
 .taskContainer h4 {
   margin-bottom: 0;
   letter-spacing: 0;
   margin-right: 10px;
 }
 
+.bg-dark {background-color: #111 !important}
 .card-header, .card.bg-dark {
   background: #111 !important;
 }
 
 .card-header h3 {color: #f1f2f3}
+
+.react-datepicker__input-container input {
+  background-color: #f7f7f9;
+  background-clip: padding-box;
+  border: 0 solid #ced4da;
+  padding: .75rem 1.5rem;
+  font-size: 1rem;
+  line-height: 1.5;
+}
