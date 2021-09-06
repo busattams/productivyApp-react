@@ -33,6 +33,7 @@ a {text-decoration: none;}
 .taskContainer.urgente {border-color: red}
 .taskContainer.média {border-color: orange}
 .taskContainer.baixa {border-color: green}
+.taskContainer.completa {opacity: .5;}
 
 .badge.urgente {background: red !important}
 .badge.baixa {background: green !important}
@@ -43,13 +44,19 @@ a {text-decoration: none;}
   margin-right: 10px;
 }
 
-.bg-dark {background-color: #111 !important}
-.card-header, .card.bg-dark {
+.bg-dark {background-color: #111 !important;}
+.bg-danger {background-color: #d10404 !important;}
+.card.bg-dark {
   background: #111 !important;
 }
-
-.card-header h3 {color: #f1f2f3}
-
+.card-header h3 {color: #f1f2f3;margin-bottom: 0;}
+.closeBtn {
+  position: absolute;
+  right: 20px;
+  top: 20px;
+  padding: 5px 12px;
+}
+.btn-block {width: 100%;}
 .react-datepicker__input-container input {
   background-color: #f7f7f9;
   background-clip: padding-box;
@@ -57,4 +64,15 @@ a {text-decoration: none;}
   padding: .75rem 1.5rem;
   font-size: 1rem;
   line-height: 1.5;
+}
+
+@media screen and (max-width: 568px) {
+  header .btn {
+    padding: 10px
+  }
+}
+@media screen and (min-width: 680px) {
+  .modal-dialog {
+    max-width: 600px;
+  }
 }

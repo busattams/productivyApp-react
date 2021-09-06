@@ -34,8 +34,6 @@ const HomeScreen = ({ history }) => {
    }, [dispatch, userInfo, successDeleteCategory, history]);
 
 
-
-
    return (
       <Row>
          <Col md={10} className='mx-auto pb-5'>
@@ -43,7 +41,6 @@ const HomeScreen = ({ history }) => {
             <Categories category={category} error={errorCategory} loading={loadingCategory} />
             <NewCategory />
             <NextTasks tasks={tasks} error={errorTasks} loading={loadingTasks} />
-
          </Col>
       </Row>
    );

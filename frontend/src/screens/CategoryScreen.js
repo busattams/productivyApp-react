@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import {Row, Col, Card, Button, Form, ListGroup } from 'react-bootstrap';
+import {Row, Col, Card, Button, Form, ListGroup, Modal  } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -41,12 +41,15 @@ const CategoryScreen = ({ history, match }) => {
       dispatch(getCategory(categoryId));
    }, [dispatch, successTask, successDeletedTask, categoryId ]);
    
+   const [show, setShow] = useState(false);
+   const handleModal = () => setShow(!show);
 
-   const deleteHandler = (id) => {
-      if(window.confirm('Tem certeza? Todas as tarefas desta categoria serão deletadas. Isso não pode ser desfeito.')) {
-         dispatch(deleteCategory(id));
-         history.push(`/home`);
-      }
+   const [ showTaskModal, setTaskModal ] = useState(false);
+   const handleTaskModal = () => setTaskModal(!showTaskModal);
+
+   const deleteHandler = () => {
+      dispatch(deleteCategory(category._id));
+      history.push(`/home`);
    }
 
    const submitHandler = (e) => {
@@ -56,6 +59,10 @@ const CategoryScreen = ({ history, match }) => {
          priority,
          date
       }));
+      setName('');
+      setPriority('Urgente');
+      setDate(new Date());
+      setTaskModal(false);
    }
 
    return (
@@ -69,75 +76,122 @@ const CategoryScreen = ({ history, match }) => {
                   <div className='d-flex justify-content-between'>
                      <h1 className='text-white'>{category.name}</h1>
                      <div>
-                        <Button variant='danger' className='btn-sm' onClick={() => deleteHandler(category._id)}>
+                        <Button variant='danger' className='btn-sm' onClick={handleModal}>
                            <i className='fas fa-trash'></i>
                         </Button>
                      </div>
                   </div>
                </Card>
                
-               <Card>
+               <Button variant='success' className='mt-3 mb-3 btn-block' onClick={handleTaskModal}>
+                     <i className='fas fa-plus'></i> Adicionar Nova Tarefa
+               </Button>
+
+               <Card className='mb-5'>
                <ListGroup variant='flush'>
                { loading ? ( <Loader /> ) : 
                 error ? ( <Message variant='danger' children={error} /> ) : ( 
                   tasks.map(task => (
                         <ListGroup.Item key={task._id}>
-                           <div  className={`taskContainer ${task.priority.toLowerCase()}`}>
+                           {!task.completed ? (
+                              <div  className={`taskContainer ${task.priority.toLowerCase()} ${task.completed && 'completa'}`}>
                               {task.date &&
                                  <p className='mb-0'>{format(new Date(task.date.toString()), "dd/MMM", { locale: pt })}</p>
-                              }
-                           <LinkContainer to={`/task/${task._id}`}><h4>{task.name}</h4></LinkContainer>
-                           </div>
+                              } 
+                              <LinkContainer to={`/task/${task._id}`}>
+                                 <h4> 
+                                    {task.name}
+                                    {task.completed && <i className='fas fa-check text-success ms-2'></i>} 
+                                 </h4>
+                              </LinkContainer>                              
+                           </div>   
+                              ) : (
+                                 <div  className={`taskContainer ${task.priority.toLowerCase()} completa`}>
+                                    {task.date &&
+                                       <p className='mb-0'>{format(new Date(task.date.toString()), "dd/MMM", { locale: pt })}</p>
+                                    } 
+                                    <LinkContainer to={`/task/${task._id}`}>
+                                       <h4> 
+                                          {task.name}
+                                          <i className='fas fa-check text-success ms-2'></i> 
+                                       </h4>
+                                    </LinkContainer>                              
+                                 </div>   
+                              )
+                           }
                         </ListGroup.Item>
                      ))
                )}
                </ListGroup>
                </Card>
 
-         <Form onSubmit={submitHandler} className='border my-5 p-4'>
-            <Row>
-               <Col md={12}>
-                  <h2>Nova Tarefa</h2>
-               </Col>
-               <Col md={12} className='mb-3'>
-                  <Form.Group controlId='task'>
-                     <Form.Label>O que você precisa fazer?</Form.Label>
-                     <Form.Control type='text'
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        required
-                        >  
-                     </Form.Control>
-                  </Form.Group>
-               </Col>
-               <Col md={6}>
-                  <Form.Group controlId='task'>
-                     <Form.Label>Qual a urgência?</Form.Label>
-                     <Form.Control as='select'
-                        value={priority}
-                        onChange={(e) => setPriority(e.target.value)}
-                        > 
-                        <option value='Urgente'>Urgente</option> 
-                        <option value='Média'>Média</option> 
-                        <option value='Baixa'>Baixa</option> 
-                        <option value='Só se der'>Só se der</option> 
-                     </Form.Control>
-                  </Form.Group>
-               </Col>
-               <Col md={6}>
-                  <Form.Group controlId='task'>
-                     <Form.Label>Quando precisa ser feito?</Form.Label>
-                     <DatePicker selected={date} onChange={(date) => setDate(date)} dateFormat='dd/MM/yyyy' locale="pt"/>
-                  </Form.Group>
-               </Col>
-               <Col md={12}>
-                  <Button type='submit' className='mt-4'>Adicionar</Button>
-               </Col>
-            </Row>
-         </Form>
+    
 
-            </>
-              )}
+         <Modal show={showTaskModal} onHide={handleTaskModal}>
+            <Modal.Body className='py-4'>
+               <Button variant="primary" className='closeBtn' onClick={handleTaskModal}>
+                  <i className='fas fa-times'></i>
+               </Button>
+               <h2>Nova Tarefa</h2>
+               <Form onSubmit={submitHandler} className='border mt-3 mb-3 p-3'>
+                  <Row>
+                     <Col md={12} className='mb-3'>
+                        <Form.Group controlId='task'>
+                           <Form.Label>O que você precisa fazer?</Form.Label>
+                           <Form.Control type='text'
+                              value={name}
+                              onChange={(e) => setName(e.target.value)}
+                              required
+                              >  
+                           </Form.Control>
+                        </Form.Group>
+                     </Col>
+                     <Col md={6} className='mb-3'>
+                        <Form.Group controlId='task'>
+                           <Form.Label>Qual a urgência?</Form.Label>
+                           <Form.Control as='select'
+                              value={priority}
+                              onChange={(e) => setPriority(e.target.value)}
+                              > 
+                              <option value='Urgente'>Urgente</option> 
+                              <option value='Média'>Média</option> 
+                              <option value='Baixa'>Baixa</option> 
+                              <option value='Só se der'>Só se der</option> 
+                           </Form.Control>
+                        </Form.Group>
+                     </Col>
+                     <Col md={6} className='mb-3'>
+                        <Form.Group controlId='task'>
+                           <Form.Label>Quando precisa ser feito?</Form.Label>
+                           <DatePicker selected={date} onChange={(date) => setDate(date)} dateFormat='dd/MM/yyyy' locale="pt"/>
+                        </Form.Group>
+                     </Col>
+                     <Col md={12}>
+                        <Button type='submit' className='btn-block mt-4'>Adicionar</Button>
+                     </Col>
+                  </Row>
+               </Form>
+               <h5 className='text-center' onClick={handleTaskModal}>Cancelar</h5>
+            </Modal.Body>
+         </Modal>
+
+
+            <Modal show={show} onHide={handleModal}>
+               <Modal.Body className='text-center p-5'>
+                  <Button variant="primary" className='closeBtn' onClick={handleModal}>
+                     <i className='fas fa-times'></i>
+                  </Button>
+                  <p className='fw-bold mb-4'>Tem certeza que quer excluir essa categoria? Todas as tarefas assinadas a ela serão excluídas. Isso não pode ser desfeito!</p>
+                  <Button variant="primary" className='me-3' onClick={handleModal}>
+                     Cancelar
+                  </Button>
+                  <Button variant="danger" onClick={deleteHandler}>
+                     Excluir
+                  </Button>
+               </Modal.Body>
+            </Modal>
+         </>
+         )}
          </Col>
         
       </Row>

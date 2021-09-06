@@ -7,7 +7,7 @@ import SmallLoader from './SmallLoader';
 const Categories = ({category, loading, error}) => {
    return (
       <Card className='mt-5'>
-         <Card.Header><h3>Projetos</h3></Card.Header>
+         <Card.Header className='bg-dark'><h3>Projetos</h3></Card.Header>
          {loading ? ( <SmallLoader  /> ) : 
             error ? ( <Message variant='danger' children={error} /> ) : ( 
                <ListGroup variant='flush' className='pt-3 px-2'>

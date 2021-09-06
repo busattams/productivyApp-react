@@ -25,7 +25,7 @@ const Header = ({ history }) => {
          <Container className='d-flex justify-content-between align-items-center'>
             <div className='d-flex align-items-center'>
                <LinkContainer to='/home'>
-                  <Button variant='light' type='button' className='text-center me-3 '><i className='fas fa-2x fa-home'></i><br />Início</Button>
+                  <Button variant='light' type='button' className='text-center me-1 me-md-3 '><i className='fas fa-2x fa-home'></i><br />Início</Button>
                </LinkContainer>
                <div>
                   {format(Date.now(), "dd 'de' MMMM 'de' yyyy", { locale: pt })}
